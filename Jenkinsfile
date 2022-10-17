@@ -14,9 +14,9 @@ pipeline {
         ACTIVE_PROFILE = 'prod'
         SPRING_PROD_PROPERTIES_PATH = "src/main/resources/application-${ACTIVE_PROFILE}.yml"
 
-        SPRING_DATASOURCE_URL = credentials('spring-datasource-url')
-        SPRING_DATASOURCE_USERNAME = credentials('spring-datasource-username')
-        SPRING_DATASOURCE_PASSWORD = credentials('spring-datasource-password')
+        SPRING_DATASOURCE_URL = credentials('spring-datasource-trend-url')
+        SPRING_DATASOURCE_USERNAME = credentials('spring-datasource-trend-username')
+        SPRING_DATASOURCE_PASSWORD = credentials('spring-datasource-trend-password')
 
         SPRING_REDIS_HOST = credentials('spring-redis-host')
         SPRING_REDIS_PORT = credentials('spring-redis-port')
@@ -118,11 +118,11 @@ pipeline {
             steps {
                 echo 'Pull Docker Image & Docker Image Run'
                 sshagent(credentials: ['ssh']) {
-                    sh "ssh -o StrictHostKeyChecking=no kimhwan@10.10.10.110 'docker pull ${IMAGE_NAME}'"
-                    sh "ssh -o StrictHostKeyChecking=no kimhwan@10.10.10.110 'docker ps -aq --filter name=${APP_NAME} | grep -q . && docker rm -f \$(docker ps -aq --filter name=${APP_NAME}) || true'"
-                    sh "ssh -o StrictHostKeyChecking=no kimhwan@10.10.10.110 'docker run -d --restart always --name ${APP_NAME} -v /etc/localtime:/etc/localtime:ro -v /usr/share/zoneinfo/Asia/Seoul:/etc/timezone:ro --net=host ${IMAGE_NAME}'"
-                    sh "ssh -o StrictHostKeyChecking=no kimhwan@10.10.10.110 'docker images -qf dangling=true | xargs -I{} docker rmi {} || true'"
-                    sh "ssh -o StrictHostKeyChecking=no kimhwan@10.10.10.110 'docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || true'"
+                    sh "ssh -o StrictHostKeyChecking=no root@10.10.10.110 'docker pull ${IMAGE_NAME}'"
+                    sh "ssh -o StrictHostKeyChecking=no root@10.10.10.110 'docker ps -aq --filter name=${APP_NAME} | grep -q . && docker rm -f \$(docker ps -aq --filter name=${APP_NAME}) || true'"
+                    sh "ssh -o StrictHostKeyChecking=no root@10.10.10.110 'docker run -d --restart always --name ${APP_NAME} -v /etc/localtime:/etc/localtime:ro -v /usr/share/zoneinfo/Asia/Seoul:/etc/timezone:ro --net=host ${IMAGE_NAME}'"
+                    sh "ssh -o StrictHostKeyChecking=no root@10.10.10.110 'docker images -qf dangling=true | xargs -I{} docker rmi {} || true'"
+                    sh "ssh -o StrictHostKeyChecking=no root@10.10.10.110 'docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || true'"
                 }
             }
             post {
